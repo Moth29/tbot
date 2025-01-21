@@ -4,6 +4,14 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 import requests
 import asyncio
+import logging
+
+# Настройка логирования
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', 
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -33,23 +41,33 @@ def set_webhook():
 
 @app.route(f'/{TELEGRAM_BOT_TOKEN}', methods=['POST'])
 async def webhook():
-    # Получаем данные от Telegram
-    update_data = request.get_json(force=True)
+    try:
+        # Получаем данные от Telegram
+        update_data = request.get_json(force=True)
+        logger.info(f"Получено обновление: {update_data}")
+        
+        # Создаем Application
+        application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+        
+        # Инициализируем Application
+        await application.initialize()
+        
+        # Создаем Update объект
+        update = Update.de_json(update_data, application.bot)
+        
+        # Регистрируем хендлеры
+        application.add_handler(CommandHandler('start', start_command))
+        application.add_handler(CommandHandler('help', help_command))
+        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+        
+        # Обработка update
+        await application.process_update(update)
+        
+        return 'OK', 200
     
-    # Создаем Application
-    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
-    
-    # Регистрируем хендлеры
-    application.add_handler(CommandHandler('start', start_command))
-    application.add_handler(CommandHandler('help', help_command))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    
-    # Создаем Update объект
-    update = Update.de_json(update_data, application.bot)
-    
-    # Обработка update
-    await application.process_update(update)
-    return 'OK'
+    except Exception as e:
+        logger.error(f"Ошибка при обработке webhook: {e}")
+        return 'Error', 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
