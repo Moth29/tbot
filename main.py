@@ -1,7 +1,7 @@
 from flask import Flask, request
 import os
+import json
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
-import asyncio
 
 app = Flask(__name__)
 
