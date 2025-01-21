@@ -31,7 +31,7 @@ def set_webhook():
     return jsonify(response.json())
 
 @app.route(f'/{TELEGRAM_BOT_TOKEN}', methods=['POST'])
-async def webhook():
+def webhook():
     # Получаем данные от Telegram
     update_data = request.get_json(force=True)
     
@@ -44,7 +44,7 @@ async def webhook():
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     
     # Обработка update
-    await application.process_update(update_data)
+    application.process_update(update_data)
     return 'OK'
 
 if __name__ == '__main__':
