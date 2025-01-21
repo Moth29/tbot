@@ -6,6 +6,7 @@ import requests
 import asyncio
 import threading
 import time
+import urllib.request
 
 app = Flask(__name__)
 
@@ -18,8 +19,14 @@ WEBHOOK_URL = 'https://28598463-5ae0-4197-b7c8-1c2d09c4360e-00-20esw1zptc3g5.kir
 def keep_alive():
     """Функция для поддержания активности бота"""
     while True:
+        try:
+            # Проверяем доступность сайта
+            urllib.request.urlopen(WEBHOOK_URL)
+            print("Бот активен и работает")
+        except Exception as e:
+            print(f"Ошибка при проверке активности: {e}")
+        
         time.sleep(60 * 5)  # Каждые 5 минут
-        print("Бот активен и работает")
 
 @app.route('/', methods=['GET'])
 def index():
@@ -64,7 +71,8 @@ async def webhook():
 
 if __name__ == '__main__':
     # Запускаем поток для поддержания активности
-    threading.Thread(target=keep_alive, daemon=True).start()
+    keep_alive_thread = threading.Thread(target=keep_alive, daemon=True)
+    keep_alive_thread.start()
     
     # Запускаем Flask-сервер
     app.run(host='0.0.0.0', port=8080)
