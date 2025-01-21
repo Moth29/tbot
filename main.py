@@ -1,20 +1,37 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import os
-import json
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
+import requests
 
 app = Flask(__name__)
 
 # Импортируем функции из bot.py
 from bot import start_command, help_command, handle_message
 
-@app.route(f'/{os.getenv("TELEGRAM_BOT_TOKEN")}', methods=['POST'])
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+WEBHOOK_URL = 'https://ваш-replit-домен.repl.co'
+
+@app.route('/set_webhook', methods=['GET'])
+def set_webhook():
+    # URL для установки webhook
+    webhook_url = f'{WEBHOOK_URL}/{TELEGRAM_BOT_TOKEN}'
+    
+    # Отправляем запрос к Telegram API для установки webhook
+    url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/setWebhook'
+    params = {
+        'url': webhook_url
+    }
+    
+    response = requests.get(url, params=params)
+    return jsonify(response.json())
+
+@app.route(f'/{TELEGRAM_BOT_TOKEN}', methods=['POST'])
 async def webhook():
     # Получаем данные от Telegram
-    update_data = await request.get_json(force=True)
+    update_data = request.get_json(force=True)
     
     # Создаем Application
-    application = Application.builder().token(os.getenv('TELEGRAM_BOT_TOKEN')).build()
+    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
     
     # Регистрируем хендлеры
     application.add_handler(CommandHandler('start', start_command))
