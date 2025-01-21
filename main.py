@@ -4,9 +4,6 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 import requests
 import asyncio
-import threading
-import time
-import urllib.request
 
 app = Flask(__name__)
 
@@ -15,18 +12,6 @@ from bot import start_command, help_command, handle_message
 
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 WEBHOOK_URL = 'https://28598463-5ae0-4197-b7c8-1c2d09c4360e-00-20esw1zptc3g5.kirk.replit.dev'
-
-def keep_alive():
-    """Функция для поддержания активности бота"""
-    while True:
-        try:
-            # Проверяем доступность сайта
-            urllib.request.urlopen(WEBHOOK_URL)
-            print("Бот активен и работает")
-        except Exception as e:
-            print(f"Ошибка при проверке активности: {e}")
-        
-        time.sleep(60 * 5)  # Каждые 5 минут
 
 @app.route('/', methods=['GET'])
 def index():
@@ -70,9 +55,4 @@ async def webhook():
     return 'OK'
 
 if __name__ == '__main__':
-    # Запускаем поток для поддержания активности
-    keep_alive_thread = threading.Thread(target=keep_alive, daemon=True)
-    keep_alive_thread.start()
-    
-    # Запускаем Flask-сервер
     app.run(host='0.0.0.0', port=8080)
