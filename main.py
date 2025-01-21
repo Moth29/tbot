@@ -3,6 +3,7 @@ import os
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 import requests
+import asyncio
 
 app = Flask(__name__)
 
@@ -31,7 +32,7 @@ def set_webhook():
     return jsonify(response.json())
 
 @app.route(f'/{TELEGRAM_BOT_TOKEN}', methods=['POST'])
-def webhook():
+async def webhook():
     # Получаем данные от Telegram
     update_data = request.get_json(force=True)
     
@@ -43,8 +44,11 @@ def webhook():
     application.add_handler(CommandHandler('help', help_command))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     
+    # Создаем Update объект
+    update = Update.de_json(update_data, application.bot)
+    
     # Обработка update
-    application.process_update(update_data)
+    await application.process_update(update)
     return 'OK'
 
 if __name__ == '__main__':
