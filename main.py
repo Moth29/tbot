@@ -9,7 +9,7 @@ app = Flask(__name__)
 from bot import start_command, help_command, handle_message
 
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
-WEBHOOK_URL = 'https://ваш-replit-домен.repl.co'
+WEBHOOK_URL = 'https://tbot.ladymoth29.repl.co'
 
 @app.route('/set_webhook', methods=['GET'])
 def set_webhook():
