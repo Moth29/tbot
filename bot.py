@@ -49,8 +49,7 @@ async def send_long_message(update: Update, response: str):
     
     while response:
         # Отправляем первые MAX_MESSAGE_LENGTH символов
-        current_message = response[:MAX_MESSAGE_LENGTH]
-        await update.message.reply_text(current_message)
+        await update.message.reply_text(response[:MAX_MESSAGE_LENGTH])
         response = response[MAX_MESSAGE_LENGTH:]
 
 def clean_text(text: str) -> str:
@@ -60,66 +59,42 @@ def clean_text(text: str) -> str:
     :param text: Исходный текст
     :return: Очищенный текст
     """
-    # Удаляем двойные пробелы после точек и запятых
-    text = re.sub(r'([.,?!…])  +', r'\1 ', text)
-    
-    # Дополнительно удаляем пробелы в начале и конце строк
-    text = '\n'.join(line.strip() for line in text.split('\n'))
-    
-    return text
+    # Удаляем лишние пробелы после точек и запятых
+    text = re.sub(r'([.,!?])(\s*)', r'\1 ', text)
+    # Удаляем двойные пробелы
+    text = re.sub(r'\s+', ' ', text)
+    return text.strip()
 
 async def handle_message(update: Update, context):
     """Обработка всех входящих сообщений"""
+    # Получаем текст сообщения
+    message_text = update.message.text
+    
     try:
-        # Логируем входящее сообщение
-        user = update.effective_user
-        message_text = update.message.text
-        logger.info(f"Получено сообщение от {user.first_name} (ID: {user.id}): '{message_text}'")
+        # Генерация ответа через LangFlow
+        response = get_langflow_response.text_generator(message_text)
         
-        # Показываем индикатор набора текста
-        await context.bot.send_chat_action(
-            chat_id=update.effective_chat.id, 
-            action='typing'
-        )
-        
-        # Получаем ответ от Langflow
-        response = get_langflow_response(message_text)
-        
-        # Очищаем текст от лишних пробелов
+        # Очистка текста
         response = clean_text(response)
         
-        # Логируем полученный ответ
-        logger.info(f"Сгенерирован ответ: {response}")
-        
-        # Отправляем ответ с обработкой длинных сообщений
+        # Отправка ответа
         await send_long_message(update, response)
     
     except Exception as e:
-        error_message = f"Произошла ошибка: {str(e)}"
-        logger.exception(error_message)
-        
-        try:
-            await update.message.reply_text(error_message)
-        except Exception as reply_error:
-            logger.error(f"Не удалось отправить сообщение об ошибке: {reply_error}")
+        logger.error(f"Ошибка при обработке сообщения: {e}")
+        await update.message.reply_text("Извините, произошла ошибка. Попробуйте позже.")
 
 def main():
     """Основная функция запуска бота"""
-    # Проверяем наличие токена
-    if not TELEGRAM_BOT_TOKEN:
-        logger.error("Токен Telegram бота не установлен!")
-        return
-    
-    # Создаем приложение
+    # Создаем Application
     application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
     
-    # Регистрируем обработчики
+    # Регистрируем хендлеры
     application.add_handler(CommandHandler('start', start_command))
     application.add_handler(CommandHandler('help', help_command))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     
     # Запускаем бота
-    logger.info("Бот запущен...")
     application.run_polling(drop_pending_updates=True)
 
 if __name__ == '__main__':
