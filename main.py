@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import os
+from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 import requests
 
