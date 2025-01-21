@@ -1,20 +1,29 @@
-from bot import main
 from flask import Flask, request
 import os
-import telebot
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
+import asyncio
 
 app = Flask(__name__)
-bot = telebot.TeleBot(os.getenv('TELEGRAM_BOT_TOKEN'))
+
+# Импортируем функции из bot.py
+from bot import start_command, help_command, handle_message
 
 @app.route(f'/{os.getenv("TELEGRAM_BOT_TOKEN")}', methods=['POST'])
-def webhook():
-    json_string = request.get_data().decode('utf-8')
-    update = telebot.types.Update.de_json(json_string)
-    bot.process_new_updates([update])
-    return "OK"
-
-# Настройка webhook
-bot.set_webhook(url=f'https://ваш-replit-домен.repl.co/{os.getenv("TELEGRAM_BOT_TOKEN")}')
+async def webhook():
+    # Получаем данные от Telegram
+    update_data = await request.get_json(force=True)
+    
+    # Создаем Application
+    application = Application.builder().token(os.getenv('TELEGRAM_BOT_TOKEN')).build()
+    
+    # Регистрируем хендлеры
+    application.add_handler(CommandHandler('start', start_command))
+    application.add_handler(CommandHandler('help', help_command))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    
+    # Обработка update
+    await application.process_update(update_data)
+    return 'OK'
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
