@@ -39,6 +39,9 @@ async def webhook():
     # Создаем Application
     application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
     
+    # Инициализируем Application
+    await application.initialize()
+    
     # Регистрируем хендлеры
     application.add_handler(CommandHandler('start', start_command))
     application.add_handler(CommandHandler('help', help_command))
