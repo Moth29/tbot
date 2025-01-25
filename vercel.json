@@ -5,5 +5,8 @@
       "src": "/api/webhook",
       "dest": "api/webhook.py"
     }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
   ]
 }
