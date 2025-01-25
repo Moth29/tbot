@@ -11,8 +11,5 @@
       "src": "/api/webhook",
       "dest": "api/webhook.py"
     }
-  ],
-  "installCommand": "pip install -r requirements.txt",
-  "buildCommand": "",
-  "outputDirectory": ""
+  ]
 }

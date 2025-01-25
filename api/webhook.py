@@ -34,3 +34,7 @@ def webhook():
 
 def handler(event, context):
     return webhook()
+
+# Vercel требует явного экспорта
+def main(event, context):
+    return handler(event, context)
