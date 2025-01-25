@@ -5,27 +5,11 @@ __pycache__/
 
 # Environment variables
 .env
-*.env
 
-# Virtual environments
+# Virtual environment
 venv/
 env/
-.venv/
 
 # IDE settings
 .vscode/
 .idea/
-
-# Logs
-*.log
-
-# Vercel
-.vercel/
-
-# Telegram bot specific
-*.session
-*.session-journal
-
-# OS generated files
-.DS_Store
-Thumbs.db
