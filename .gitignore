@@ -3,13 +3,36 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Environment variables
-.env
-
-# Virtual environment
+# Virtual Environment
 venv/
 env/
+.env/
+.venv/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
 
 # IDE settings
 .vscode/
 .idea/
+
+# Secrets and tokens
+.env
+*.env
+.env.local
+
+# Logs
+*.log
+
+# Vercel
+.vercel/
+
+# Telegram bot specific
+*.session
+*.session-journal
+
+# OS generated files
+.DS_Store
+Thumbs.db
