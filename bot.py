@@ -11,7 +11,7 @@ logging.basicConfig(
 
 # Токен и webhook
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
-VERCEL_WEBHOOK_URL = 'https://tbot-pearl.vercel.app/api/webhook'
+VERCEL_WEBHOOK_URL = 'https://tbot-rouge.vercel.app/api/webhook'
 
 async def setup_webhook(application: Application):
     try:
