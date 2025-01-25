@@ -3,6 +3,7 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 import os
 import sys
+import json
 
 # Добавляем путь к родительской директории
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -33,8 +34,9 @@ def webhook():
     return jsonify({"status": "ok"})
 
 def handler(event, context):
-    return webhook()
-
-# Vercel требует явного экспорта
-def main(event, context):
-    return handler(event, context)
+    # Vercel-специфичный обработчик
+    body = json.loads(event['body'])
+    return {
+        'statusCode': 200,
+        'body': json.dumps({"status": "ok"})
+    }
