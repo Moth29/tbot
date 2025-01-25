@@ -2,8 +2,11 @@ from flask import Flask, request, jsonify
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 import os
+import sys
 
-# Импорт функций из основного бота
+# Добавляем путь к родительской директории
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from bot import start_command, help_command, handle_message
 
 app = Flask(__name__)
