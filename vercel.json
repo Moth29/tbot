@@ -1,12 +1,1 @@
-{
-  "version": 2,
-  "routes": [
-    {
-      "src": "/api/webhook",
-      "dest": "api/webhook.py"
-    }
-  ],
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
-  ]
-}
+{ "rewrites": [{ "source": "/(.*)", "destination": "/" }] }
