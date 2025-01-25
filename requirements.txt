@@ -1,5 +1,4 @@
 python-telegram-bot==21.10
-flask
 requests
 python-dotenv
 gunicorn  # Для Vercel
